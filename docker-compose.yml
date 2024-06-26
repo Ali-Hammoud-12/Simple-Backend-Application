@@ -1,0 +1,24 @@
+version: '3'
+services:
+  node:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: your_mysql_user
+      DB_PASSWORD: your_mysql_password
+      DB_NAME: ghaim
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0.13
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ghaim
+      MYSQL_USER: your_mysql_user
+      MYSQL_PASSWORD: your_mysql_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data:
