@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const app = express();
 const port = 3000;
 
-// database connection configuration
+// Database connection configuration
 const db = mysql.createConnection({
     host: 'database-1.ctam8sm8cni0.eu-north-1.rds.amazonaws.com',
     user: 'root',
@@ -28,15 +28,82 @@ app.get('/', (req, res) => {
             return;
         }
 
-        let html = '<style>table { border-collapse: collapse; width: 100%; } th, td { padding: 8px; text-align: left; border: 1px solid #ddd; } th { background-color: #f2f2f2; } tr:hover { background-color: #f5f5f5; }</style>';
-        html += '<h1>Employee Information</h1>';
-        html += `<p>Total number of employees: ${results.length}</p>`;
-        html += '<table>';
-        html += '<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th><th>Position</th></tr>';
+        let html = `
+        <html>
+        <head>
+            <title>Employee Information</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f8f9fa;
+                    margin: 0;
+                    padding: 20px;
+                }
+                h1 {
+                    color: #343a40;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    background-color: #ffffff;
+                }
+                th, td {
+                    padding: 12px;
+                    border: 1px solid #dee2e6;
+                    text-align: left;
+                }
+                th {
+                    background-color: #343a40;
+                    color: #ffffff;
+                }
+                tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+                .container {
+                    max-width: 800px;
+                    margin: auto;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                    border-radius: 8px;
+                    background-color: #ffffff;
+                }
+                .employee-count {
+                    margin: 20px 0;
+                    font-size: 18px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Employee Information</h1>
+                <div class="employee-count">Total Number of Employees: ${results.length}</div>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Position</th>
+                    </tr>`;
+
         results.forEach((employee) => {
-            html += `<tr><td>${employee.id}</td><td>${employee.first_name}</td><td>${employee.last_name}</td><td>${employee.email}</td><td>${employee.position}</td></tr>`;
+            html += `
+                    <tr>
+                        <td>${employee.id}</td>
+                        <td>${employee.first_name}</td>
+                        <td>${employee.last_name}</td>
+                        <td>${employee.email}</td>
+                        <td>${employee.position}</td>
+                    </tr>`;
         });
-        html += '</table>';
+
+        html += `
+                </table>
+            </div>
+        </body>
+        </html>`;
+
         res.send(html);
     });
 });
