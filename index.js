@@ -20,9 +20,7 @@ db.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-
 app.get('/', (req, res) => {
-
     db.query('SELECT * FROM employee_info', (err, results) => {
         if (err) {
             console.error('Error querying MySQL:', err);
@@ -30,7 +28,10 @@ app.get('/', (req, res) => {
             return;
         }
 
-        let html = '<table border="1">';
+        let html = '<style>table { border-collapse: collapse; width: 100%; } th, td { padding: 8px; text-align: left; border: 1px solid #ddd; } th { background-color: #f2f2f2; } tr:hover { background-color: #f5f5f5; }</style>';
+        html += '<h1>Employee Information</h1>';
+        html += `<p>Total number of employees: ${results.length}</p>`;
+        html += '<table>';
         html += '<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th><th>Position</th></tr>';
         results.forEach((employee) => {
             html += `<tr><td>${employee.id}</td><td>${employee.first_name}</td><td>${employee.last_name}</td><td>${employee.email}</td><td>${employee.position}</td></tr>`;
