@@ -20,9 +20,7 @@ db.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-
 app.get('/', (req, res) => {
-
     db.query('SELECT * FROM employee_info', (err, results) => {
         if (err) {
             console.error('Error querying MySQL:', err);
@@ -30,13 +28,85 @@ app.get('/', (req, res) => {
             return;
         }
 
-        let html = '<table border="1">';
-        html += '<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Email</th><th>Position</th></tr>';
-        results.forEach((employee) => {
-            html += `<tr><td>${employee.id}</td><td>${employee.first_name}</td><td>${employee.last_name}</td><td>${employee.email}</td><td>${employee.position}</td></tr>`;
+        db.query('SELECT COUNT(*) AS total FROM employee_info', (err, countResult) => {
+            if (err) {
+                console.error('Error querying MySQL:', err);
+                res.status(500).send('Error fetching data from database');
+                return;
+            }
+
+            const totalEmployees = countResult[0].total;
+
+            let html = `
+            <html>
+            <head>
+                <title>Employee Information</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f4f4f4;
+                    }
+                    .container {
+                        width: 80%;
+                        margin: 0 auto;
+                        padding: 20px;
+                        background-color: #fff;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    table, th, td {
+                        border: 1px solid #ddd;
+                    }
+                    th, td {
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                    .total {
+                        margin: 20px 0;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Employee Information</h1>
+                    <div class="total">Total Employees: ${totalEmployees}</div>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Position</th>
+                        </tr>`;
+            
+            results.forEach((employee) => {
+                html += `<tr>
+                            <td>${employee.id}</td>
+                            <td>${employee.first_name}</td>
+                            <td>${employee.last_name}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.position}</td>
+                        </tr>`;
+            });
+
+            html += `
+                    </table>
+                </div>
+            </body>
+            </html>`;
+
+            res.send(html);
         });
-        html += '</table>';
-        res.send(html);
     });
 });
 
